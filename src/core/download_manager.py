@@ -184,19 +184,21 @@ class DownloadManager(QObject):
                 self.task_updated.emit(task)
                 return False
             
-            # 创建下载器
-            downloader = Downloader(task)
+            # 创建下载器，传入回调函数
+            def progress_callback(updated_task):
+                """进度更新回调"""
+                # 更新任务对象
+                self.tasks[task_id] = updated_task
+                
+                # 根据任务状态发送相应信号
+                if updated_task.status == "completed":
+                    self._on_download_completed(task_id)
+                elif updated_task.status == "failed":
+                    self._on_download_failed(task_id, updated_task.error or "未知错误")
+                else:
+                    self._on_progress_updated(task_id)
             
-            # 连接信号
-            downloader.progress_updated.connect(
-                lambda: self._on_progress_updated(task_id)
-            )
-            downloader.download_completed.connect(
-                lambda: self._on_download_completed(task_id)
-            )
-            downloader.download_failed.connect(
-                lambda error: self._on_download_failed(task_id, error)
-            )
+            downloader = Downloader(task, progress_callback=progress_callback)
             
             # 保存下载器引用
             self.downloaders[task_id] = downloader
@@ -205,8 +207,10 @@ class DownloadManager(QObject):
             task.status = "downloading"
             self.active_count += 1
             
-            # 开始下载
-            downloader.start()
+            # 在单独的线程中开始下载
+            import threading
+            download_thread = threading.Thread(target=downloader.start, daemon=True)
+            download_thread.start()
             
             # 发送信号
             self.task_updated.emit(task)

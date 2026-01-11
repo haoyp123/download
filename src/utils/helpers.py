@@ -185,14 +185,14 @@ def calculate_chunks(file_size: int, chunk_count: int, min_chunk_size: int = 104
         min_chunk_size: 最小分块大小（默认1MB）
     
     Returns:
-        list: 分块信息列表，每项为(start, end)元组
+        list: 分块信息列表，每项为包含start、end、downloaded键的字典
     """
     if file_size <= 0:
         return []
     
     # 如果文件太小，只使用一个块
     if file_size < min_chunk_size:
-        return [(0, file_size - 1)]
+        return [{'start': 0, 'end': file_size - 1, 'downloaded': 0}]
     
     # 计算实际分块大小
     chunk_size = file_size // chunk_count
@@ -207,7 +207,7 @@ def calculate_chunks(file_size: int, chunk_count: int, min_chunk_size: int = 104
         start = i * chunk_size
         # 最后一块包含所有剩余字节
         end = file_size - 1 if i == chunk_count - 1 else (i + 1) * chunk_size - 1
-        chunks.append((start, end))
+        chunks.append({'start': start, 'end': end, 'downloaded': 0})
     
     return chunks
 

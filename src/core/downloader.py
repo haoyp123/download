@@ -118,7 +118,8 @@ class Downloader:
     def _download_with_chunks(self):
         """分块下载"""
         # 创建临时文件
-        temp_file = self.task.save_path + '.tmp'
+        final_file_path = os.path.join(self.task.save_path, self.task.filename)
+        temp_file = final_file_path + '.tmp'
         
         # 如果是恢复下载，读取已下载的进度
         if os.path.exists(temp_file):
@@ -157,9 +158,9 @@ class Downloader:
         # 如果下载完成，重命名临时文件
         if not self._stop_flag.is_set() and not self._pause_flag.is_set():
             if os.path.exists(temp_file):
-                if os.path.exists(self.task.save_path):
-                    os.remove(self.task.save_path)
-                os.rename(temp_file, self.task.save_path)
+                if os.path.exists(final_file_path):
+                    os.remove(final_file_path)
+                os.rename(temp_file, final_file_path)
     
     def _download_chunk(self, chunk_index: int, chunk: dict, temp_file: str):
         """下载单个分块"""
@@ -221,7 +222,8 @@ class Downloader:
             response.raise_for_status()
             
             # 写入文件
-            with open(self.task.save_path, 'wb') as f:
+            final_file_path = os.path.join(self.task.save_path, self.task.filename)
+            with open(final_file_path, 'wb') as f:
                 for data in response.iter_content(chunk_size=8192):
                     if self._stop_flag.is_set() or self._pause_flag.is_set():
                         break
@@ -289,10 +291,11 @@ class Downloader:
     def _verify_download(self) -> bool:
         """验证下载是否完成"""
         try:
-            if not os.path.exists(self.task.save_path):
+            final_file_path = os.path.join(self.task.save_path, self.task.filename)
+            if not os.path.exists(final_file_path):
                 return False
             
-            file_size = os.path.getsize(self.task.save_path)
+            file_size = os.path.getsize(final_file_path)
             
             # 如果知道文件大小，检查是否匹配
             if self.task.total_size > 0:
