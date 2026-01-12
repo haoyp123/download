@@ -14,6 +14,7 @@ from PySide6.QtGui import QFont
 
 from src.core.download_task import DownloadTask
 from src.utils.helpers import format_size, format_speed, format_time
+from src.utils.icon_manager import IconManager
 
 
 class DownloadItem(QWidget):
@@ -44,9 +45,11 @@ class DownloadItem(QWidget):
         self.task_id = task.task_id
         
         # UI组件
+        self.file_icon_label = None
         self.filename_label = None
         self.url_label = None
         self.progress_bar = None
+        self.status_icon_label = None
         self.status_label = None
         self.size_label = None
         self.speed_label = None
@@ -71,6 +74,13 @@ class DownloadItem(QWidget):
         # 顶部区域：文件名和控制按钮
         top_layout = QHBoxLayout()
         
+        # 文件类型图标
+        self.file_icon_label = QLabel()
+        file_icon = IconManager.get_file_type_icon(self.task.filename)
+        self.file_icon_label.setPixmap(file_icon.pixmap(32, 32))
+        self.file_icon_label.setFixedSize(32, 32)
+        top_layout.addWidget(self.file_icon_label)
+        
         # 文件名标签
         self.filename_label = QLabel(self.task.filename)
         filename_font = QFont()
@@ -85,21 +95,21 @@ class DownloadItem(QWidget):
         button_layout.setSpacing(5)
         
         # 开始/暂停按钮
-        self.start_pause_button = QPushButton("开始")
-        self.start_pause_button.setFixedWidth(60)
+        self.start_pause_button = QPushButton(IconManager.get_icon("start"), "开始")
+        self.start_pause_button.setFixedWidth(80)
         self.start_pause_button.clicked.connect(self._on_start_pause_clicked)
         button_layout.addWidget(self.start_pause_button)
         
         # 打开文件按钮
-        self.open_button = QPushButton("打开")
-        self.open_button.setFixedWidth(60)
+        self.open_button = QPushButton(IconManager.get_icon("folder"), "打开")
+        self.open_button.setFixedWidth(80)
         self.open_button.clicked.connect(self._on_open_clicked)
         self.open_button.setEnabled(False)
         button_layout.addWidget(self.open_button)
         
         # 删除按钮
-        self.remove_button = QPushButton("删除")
-        self.remove_button.setFixedWidth(60)
+        self.remove_button = QPushButton(IconManager.get_icon("delete"), "删除")
+        self.remove_button.setFixedWidth(80)
         self.remove_button.clicked.connect(self._on_remove_clicked)
         button_layout.addWidget(self.remove_button)
         
@@ -126,6 +136,13 @@ class DownloadItem(QWidget):
         
         # 底部信息区域
         bottom_layout = QHBoxLayout()
+        
+        # 状态图标
+        self.status_icon_label = QLabel()
+        status_icon = IconManager.get_status_icon(self.task.status)
+        self.status_icon_label.setPixmap(status_icon.pixmap(16, 16))
+        self.status_icon_label.setFixedSize(16, 16)
+        bottom_layout.addWidget(self.status_icon_label)
         
         # 状态标签
         self.status_label = QLabel("等待中")
@@ -173,7 +190,10 @@ class DownloadItem(QWidget):
         self.progress_bar.setValue(int(self.task.progress))
         self.progress_bar.setFormat(f"{self.task.progress:.1f}%")
         
-        # 更新状态
+        # 更新状态图标和文本
+        status_icon = IconManager.get_status_icon(self.task.status)
+        self.status_icon_label.setPixmap(status_icon.pixmap(16, 16))
+        
         status_text, status_color = self._get_status_info()
         self.status_label.setText(status_text)
         self.status_label.setStyleSheet(f"color: {status_color};")
@@ -238,12 +258,15 @@ class DownloadItem(QWidget):
         
         # 更新开始/暂停按钮
         if status in ["waiting", "paused", "stopped", "failed"]:
+            self.start_pause_button.setIcon(IconManager.get_icon("start"))
             self.start_pause_button.setText("开始")
             self.start_pause_button.setEnabled(True)
         elif status == "downloading":
+            self.start_pause_button.setIcon(IconManager.get_icon("pause"))
             self.start_pause_button.setText("暂停")
             self.start_pause_button.setEnabled(True)
         elif status == "completed":
+            self.start_pause_button.setIcon(IconManager.get_status_icon("completed"))
             self.start_pause_button.setText("完成")
             self.start_pause_button.setEnabled(False)
         

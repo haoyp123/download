@@ -13,9 +13,9 @@
 - ✅ **M2**: 实现多线程下载和断点续传
 
 ### 当前状态
-- **测试日期**: 2026年1月11日
-- **当前版本**: v0.1.0
-- **开发阶段**: 阶段三已完成，准备进入阶段四
+- **测试日期**: 2026年1月12日
+- **当前版本**: v0.1.1
+- **开发阶段**: 图标系统集成完成，准备UI功能连接
 - **代码质量**: 优秀，核心功能测试通过率100%
 
 ### 已实现功能清单
@@ -29,6 +29,8 @@
 8. ✅ 临时文件管理（.tmp文件机制）
 9. ✅ 文件完整性验证
 10. ✅ 进度跟踪与回调
+11. ✅ 图标管理系统（IconManager）
+12. ✅ UI图标集成（工具栏、菜单、按钮、状态图标）
 
 ### 测试验证情况
 详见 [TEST_REPORT.md](TEST_REPORT.md)
@@ -50,14 +52,27 @@
 
 ### 🎯 当前优先级：UI集成与功能完善
 
+#### 最新进展 (2026-01-12)
+**图标系统集成完成** ✅
+- 创建了完整的IconManager类，支持SVG图标和Qt标准图标
+- 在MainWindow中集成图标到工具栏和菜单
+- 在DownloadItem中添加文件类型图标和状态图标
+- 创建了图标使用文档（USAGE_GUIDE.md）
+- 应用程序成功运行，图标正常显示
+
+**新增文件**:
+- `src/utils/icon_manager.py` - 图标管理器核心类
+- `resources/icons/ICON_REQUIREMENTS.md` - 图标需求文档
+- `resources/icons/USAGE_GUIDE.md` - 图标使用指南
+
 虽然核心下载功能已经实现并测试通过，但目前还无法通过GUI使用这些功能。下一步应该：
 
 #### 第一优先级：UI与下载功能集成
-1. **连接UI和下载管理器**
-   - 在main_window.py中集成DownloadManager实例
-   - 实现"添加下载"按钮的实际功能
-   - 连接AddDownloadDialog与DownloadManager
-   - 实现任务添加后的UI更新
+1. **连接UI和下载管理器** 🔄 进行中
+   - ✅ MainWindow已初始化DownloadManager
+   - ✅ 信号连接已实现（task_added、task_updated等）
+   - ⏳ 需要完善AddDownloadDialog的实际功能
+   - ⏳ 需要测试任务添加和UI更新流程
 
 2. **下载列表UI实现**
    - 使用QListWidget或QTableWidget显示下载任务

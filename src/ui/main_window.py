@@ -17,6 +17,7 @@ from ..core.download_manager import DownloadManager
 from ..utils.config import ConfigManager
 from ..utils.logger import Logger
 from ..utils.helpers import format_size, format_speed
+from ..utils.icon_manager import IconManager
 from .add_download_dialog import AddDownloadDialog
 from .settings_dialog import SettingsDialog
 from .download_item import DownloadItem
@@ -91,48 +92,48 @@ class MainWindow(QMainWindow):
     def _create_actions(self):
         """创建动作"""
         # 文件菜单动作
-        self.add_action = QAction("添加下载", self)
+        self.add_action = QAction(IconManager.get_icon("add"), "添加下载", self)
         self.add_action.setShortcut(QKeySequence("Ctrl+N"))
         self.add_action.setToolTip("添加新的下载任务")
         self.add_action.triggered.connect(self._on_add_download)
         
-        self.add_batch_action = QAction("批量添加", self)
+        self.add_batch_action = QAction(IconManager.get_icon("list"), "批量添加", self)
         self.add_batch_action.setShortcut(QKeySequence("Ctrl+B"))
         self.add_batch_action.triggered.connect(self._on_add_batch)
         
-        self.exit_action = QAction("退出", self)
+        self.exit_action = QAction(IconManager.get_icon("exit"), "退出", self)
         self.exit_action.setShortcut(QKeySequence("Ctrl+Q"))
         self.exit_action.triggered.connect(self.close)
         
         # 编辑菜单动作
-        self.start_all_action = QAction("全部开始", self)
+        self.start_all_action = QAction(IconManager.get_icon("start"), "全部开始", self)
         self.start_all_action.triggered.connect(self._on_start_all)
         
-        self.pause_all_action = QAction("全部暂停", self)
+        self.pause_all_action = QAction(IconManager.get_icon("pause"), "全部暂停", self)
         self.pause_all_action.triggered.connect(self._on_pause_all)
         
-        self.clear_completed_action = QAction("清除已完成", self)
+        self.clear_completed_action = QAction(IconManager.get_icon("clear"), "清除已完成", self)
         self.clear_completed_action.triggered.connect(self._on_clear_completed)
         
-        self.settings_action = QAction("设置", self)
+        self.settings_action = QAction(IconManager.get_icon("settings"), "设置", self)
         self.settings_action.setShortcut(QKeySequence("Ctrl+,"))
         self.settings_action.triggered.connect(self._on_settings)
         
         # 查看菜单动作
-        self.show_downloading_action = QAction("正在下载", self)
+        self.show_downloading_action = QAction(IconManager.get_status_icon("downloading"), "正在下载", self)
         self.show_downloading_action.setCheckable(True)
         self.show_downloading_action.setChecked(True)
         
-        self.show_completed_action = QAction("已完成", self)
+        self.show_completed_action = QAction(IconManager.get_status_icon("completed"), "已完成", self)
         self.show_completed_action.setCheckable(True)
         self.show_completed_action.setChecked(True)
         
-        self.show_failed_action = QAction("失败", self)
+        self.show_failed_action = QAction(IconManager.get_status_icon("failed"), "失败", self)
         self.show_failed_action.setCheckable(True)
         self.show_failed_action.setChecked(True)
         
         # 帮助菜单动作
-        self.about_action = QAction("关于", self)
+        self.about_action = QAction(IconManager.get_icon("help"), "关于", self)
         self.about_action.triggered.connect(self._on_about)
     
     def _create_menus(self):
